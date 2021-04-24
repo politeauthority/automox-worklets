@@ -41,8 +41,8 @@ You will need to have criteria for the following varriables. These values will b
     EP_USER="root"
     ```
  - Create a new worklet for Linux
-   - Set the Evaluation segment with `evaluation.sh`, this script should not require modification.
-   - Set the Remediation segment with `remediation.sh` and your unique values from above.
+   - Set the Evaluation segment with [evaluation.sh](evaluation.sh), this script should not require modification.
+   - Set the Remediation segment with [remediation.sh](remediation.sh) and your unique values from above.
  - Run the worklet on a Ubuntu device.
 
  - :warning: The first time the worklet runs it will likely error. Check the Automox Activity Log. This is expected because the device's public key has not yet been added to the SSH server's `authorized_keys` file. In the activity log the Details section should have a line that looks similar to the code block below. You will need to run this on the SSH server, so the device's public SSH key is authorized on the SSH server.
