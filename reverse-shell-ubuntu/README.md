@@ -20,8 +20,8 @@ You will need to have details for the following varriables. These values will be
 | `REMOTE_PRIVATE_KEY`      | Private key file on the remote service which corresponds to the public key `REMOTE_PUBLIC_KEY`  |
 | `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       |
 | `EP_USER`      | User on the device to run the tunnel as.       |
-| `EP_PRIVATE_KEY`   | Private key file on the device to use when logging into the remote SSH server.        |
-
+| `EP_SSH_PRIVATE_KEY`   | Private key file on the device to use when logging into the remote SSH server.        |
+| `EP_SSH_PUBLIC_KEY`   | ex `/root/.ssh/id_rsa.pub`        |
 
 ## Setup
  - Determine script vars, these values will be used in the `evaluation.sh`, `remediation.sh` and on the remote SSH server, to log into the device.
@@ -33,7 +33,8 @@ You will need to have details for the following varriables. These values will be
     REMOTE_PRIVATE_KEY="/home/automox-device-shell/data/openssh/keys/automox-remote"
     EP_TUNNEL_PORT=43022
     EP_USER=admin
-    EP_PRIVATE_KEY=/home/admin/.ssh/id_rsa
+    EP_SSH_PRIVATE_KEY=/home/admin/.ssh/id_rsa
+    EP_SSH_PUBLIC_KEY=/root/.ssh/id_rsa.pub
     ```
  - Create a new worklet, filling out the evaluation segment with `evaluation.sh` and your unique values.
    - Set the Evaluation segment with `evaluation.sh` and your unique values from above.
@@ -42,3 +43,18 @@ You will need to have details for the following varriables. These values will be
  - Login in to the remote server with ssh
  - From the remote server, running the following to SSH to into your device
   ```ssh ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i ${REMOTE_PRIVATE_KEY}```
+
+
+## Testing
+ - Spin up 18.04 digital ocean droplet
+ - SSH to box
+ - Install Automox
+  ```curl -sS "https://console.automox.com/downloadInstaller?accesskey=your-key" | bash```
+  ```service amagent start```
+
+ - Add device to group with worklet
+ - Run system updates
+ - Run worklet
+ - Copy public key to SSH Services authorized_keys
+ - Run worklet again
+ - Connect to device from SSH server
