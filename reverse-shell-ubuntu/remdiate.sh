@@ -2,19 +2,19 @@
 # Reverse Tunnel - Remediation
 set -e
 
-SSH_USER="root"
-SSH_HOST="64.225.88.152"
-SSH_PORT=22
-TUNNEL_PORT=43022
-EP_USER=kube
-EP_PRIVATE_KEY=/home/kube/.ssh/id_rsa
+REMOTE_SSH_USER="root"
+REMOTE_SSH_HOST="64.225.88.152"
+REMOTE_SSH_PORT=22
+EP_TUNNEL_PORT=43022
+EP_USER=root
+EP_SSH_PRIVATE_KEY=/root/.ssh/id_rsa
 
 ssh \
   -o StrictHostKeyChecking=no \
-  -N -R ${TUNNEL_PORT}:localhost:22 \
-  ${SSH_USER}@${SSH_HOST} \
-  -p ${SSH_PORT} \
-  -i ${EP_PRIVATE_KEY} &
+  -N -R ${EP_TUNNEL_PORT}:localhost:22 \
+  ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
+  -p ${REMOTE_SSH_PORT} \
+  -i ${EP_SSH_PRIVATE_KEY} &
 
-echo "[OKAY]  SSH tunnel to ${SSH_HOST} established"
+echo "[OKAY]  SSH tunnel to ${REMOTE_SSH_HOST} established"
 exit 0
