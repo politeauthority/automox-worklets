@@ -1,9 +1,7 @@
 #!/bin/bash
 # Reverse Tunnel - Evaluation
-# Determine if the Reverse Tunnel should run.
-# Here we download a public ssh key that we will add to the device's authorized keys file so that
-# when a tunnel is established the private half of this key can be used to log in to the device's
-# shell.
+# Determine if the Reverse Tunnel should run by looking for an existing tunnel running on the
+# device.
 
 set -e
 
