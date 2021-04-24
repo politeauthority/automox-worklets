@@ -8,7 +8,7 @@ This script is currently a POC and not suggested for production use. It's curren
 
 :warning: **PLEASE BE AWARE:** Running SSH servers explicity as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. (Hopefully in time I can create more secure examples.)
 
-:warning: Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
+:warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04).
  - A server publicly available running SSH. Note: In order to forward traffic, your SSH server will have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
@@ -27,6 +27,7 @@ You will need to have criteria for the following varriables. These values will b
 | `EP_USER`      | User on the device to run the tunnel as.       | `root` |
 
 `REMOTE_PUBLIC_KEY` - This is a file which needs to be accessable from the end point via `wget`.
+
 `EP_TUNNEL_PORT` - This is the port which the endpoint will create the tunnel on, which you will connect on through your SSH server.
 ## Setup
  - Determine script vars, mentioned above. These values will be used in the `remediation.sh` file and on the remote SSH server to log into the device.
@@ -40,7 +41,7 @@ You will need to have criteria for the following varriables. These values will b
     EP_USER="root"
     ```
  - Create a new worklet for Linux
-   - Set the Evaluation segment with `evaluation.sh` and your unique values from above.
+   - Set the Evaluation segment with `evaluation.sh`, this script should not require modification.
    - Set the Remediation segment with `remediation.sh` and your unique values from above.
  - Run the worklet on a Ubuntu device.
 
