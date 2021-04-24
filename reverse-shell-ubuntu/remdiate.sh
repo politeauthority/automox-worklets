@@ -48,6 +48,9 @@ if test -f ${EP_SSH_AUTHORIZED_KEYS}; then
 fi
 rm remote_public_key.pub
 
+PUBLIC_KEY=$(cat ${EP_SSH_PUBLIC_KEY})
+echo "Run the following from the remote to add the device key                                     "
+echo "echo ${PUBLIC_KEY} >> ~/.ssh/authorized_keys"
 
 # Start the SSH tunnel.
 ssh \
@@ -59,10 +62,6 @@ ssh \
   -i ${EP_SSH_KEY}
 
 
-PUBLIC_KEY=$(cat ${EP_SSH_PUBLIC_KEY})
-
 echo "[OKAY]  SSH tunnel to ${REMOTE_SSH_HOST} established"
-echo "Run the following from the remote"
-echo 'echo ${PUBLIC_KEY} >> ~/.ssh/authorized_keys'
 echo "ssh -o StrictHostKeyChecking=no ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i ${REMOTE_PRIVATE_KEY}"
 exit 0
