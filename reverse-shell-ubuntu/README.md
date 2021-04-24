@@ -5,7 +5,7 @@ device to the entire public.
 
 This Worklet has a sister Worklet, 
 [Reverse Shell - Ubuntu - Disable](../reverse-shell-ubuntu-disable/README.md) which shuts the SSH
-reverse tunnel off that the script creates.
+reverse tunnel off that this Worklet creates.
 
 ## Before You Get Started
 This script is currently a POC and not suggested for production use. It's currently tested against Ubuntu 18.04 and nothing else.
