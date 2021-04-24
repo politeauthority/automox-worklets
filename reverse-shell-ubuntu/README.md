@@ -4,15 +4,16 @@ connections back to the device from the remote server, without exposing the SSH 
 device to the entire public.
 
 ## Before You Get Started
-:warning: This script is currently a POC and not suggested for production use. It's currently tested against Ubuntu 18.04 and nothing else. *PLEASE BE AWARE* Running SSH servers explicity as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. (Hopefully in time I can create more secure examples.)
-
+This script is currently a POC and not suggested for production use. It's currently tested against Ubuntu 18.04 and nothing else.
+:warning: **PLEASE BE AWARE:** Running SSH servers explicity as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. (Hopefully in time I can create more secure examples.)
+:warning: Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04).
  - A server publicly available running SSH.
  - A publicly available public key for the SSH sever, to be added to the endpoints authorized keys.
 
-## Details
-You will need to have details for the following varriables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
+## Variables For Your Worket
+You will need to have criteria for the following varriables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
 | Var Name      | Description | Example |
 | ----------- | ----------- |  ----------- |
 | `REMOTE_SSH_HOST`      | IP or FQDN of remote server running a SSH server.       | `ssh.example.com` |
@@ -23,8 +24,10 @@ You will need to have details for the following varriables. These values will be
 | `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       | `43022` |
 | `EP_USER`      | User on the device to run the tunnel as.       | `root` |
 
+`REMOTE_PUBLIC_KEY` - This is a file which needs to be accessable from the end point via `wget`.
+`EP_TUNNEL_PORT` - This is the port which the endpoint will create the tunnel on, which you will connect on through your SSH server.
 ## Setup
- - Determine script vars, these values will be used in the `remediation.sh` file and on the remote SSH server, to log into the device.
+ - Determine script vars, mentioned above. These values will be used in the `remediation.sh` file and on the remote SSH server to log into the device.
     ```console
     REMOTE_SSH_HOST="ssh.example.com"
     REMOTE_SSH_PORT=22
