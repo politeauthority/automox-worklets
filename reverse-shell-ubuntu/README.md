@@ -5,7 +5,9 @@ device to the entire public.
 
 ## Before You Get Started
 This script is currently a POC and not suggested for production use. It's currently tested against Ubuntu 18.04 and nothing else.
+
 :warning: **PLEASE BE AWARE:** Running SSH servers explicity as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. (Hopefully in time I can create more secure examples.)
+
 :warning: Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04).
@@ -41,6 +43,7 @@ You will need to have criteria for the following varriables. These values will b
    - Set the Evaluation segment with `evaluation.sh` and your unique values from above.
    - Set the Remediation segment with `remediation.sh` and your unique values from above.
  - Run the worklet on a Ubuntu device.
+
  - :warning: The first time the worklet runs it will likely error. Check the Automox Activity Log. This is expected because the device's public key has not yet been added to the SSH server's `authorized_keys` file. In the activity log the Details section should have a line that looks similar to the code block below. You will need to run this on the SSH server, so the device's public SSH key is authorized on the SSH server.
      ```console
     echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCeGicJWBZRukvhHgwRjy7WttcK0oes4qkfrJvaUuUnSJcVe/hVTOFCjD+NhBBBQy2h3+tfpeSG9FZGbI57o5nwnWOXLQ32z2RKkM0y8Q7Wf7QIIMFnvOs0mKL1v9cgFBPlbzLR/wdVUzWXoYf4jKbVeOWPy9iiZxUhFAQEDyMU/2OPUHhVhT39nPaMV0NQfMEQlSzI0TKC/h5G6soD0aNPysOGkVJapfi9yQRLx7UX6rzVTsznU4xQl+RH3jGEqrjAQIKmnkxbCit40I8wLlggbs2w3KF4uWIpyYVW7JWra2/beKnfQ6F4gVRb9PRxUKhrWWi3OmeQhSMtkL5qy/NZ >> ~/.ssh/authorized_keys
