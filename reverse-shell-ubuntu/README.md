@@ -1,51 +1,53 @@
-# Woklet: Reverse Shell - Ubuntu
+# Reverse Shell - Ubuntu
 This worklet creates a reverse shell from an Automox device to a remote SSH server, allowing SSH 
 connections back to the device from the remote server, without exposing the SSH service on the
-device to the public internet.
+device to the entire public.
 
 
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04).
  - A server publicly available running SSH.
- - A key pair to share between the server and device.
+ - A publicly available public key for the SSH sever, to be added to the endpoints authorized keys.
 
 ## Details
 You will need to have details for the following varriables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
 | Var Name      | Description |
 | ----------- | ----------- |
 | `REMOTE_SSH_HOST`      | IP or FQDN of remote server running a SSH server.       |
-| `REMOTE_SSH_USER`      | User on the remote host for device to log in to.       |
 | `REMOTE_SSH_PORT`      | Port on remote server running SSH (typically `22`)       |
+| `REMOTE_SSH_USER`      | User on the remote host for device to log in to.       |
 | `REMOTE_PUBLIC_KEY`   | Publically accessible file containing the public key of the SSH server user, to be added the devices `authorized_keys` file. (ex: `https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub`        |
 | `REMOTE_PRIVATE_KEY`      | Private key file on the remote service which corresponds to the public key `REMOTE_PUBLIC_KEY`  |
 | `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       |
 | `EP_USER`      | User on the device to run the tunnel as.       |
-| `EP_SSH_PRIVATE_KEY`   | Private key file on the device to use when logging into the remote SSH server.        |
-| `EP_SSH_PUBLIC_KEY`   | ex `/root/.ssh/id_rsa.pub`        |
 
 ## Setup
  - Determine script vars, these values will be used in the `evaluation.sh`, `remediation.sh` and on the remote SSH server, to log into the device.
     ```console
-    REMOTE_SSH_USER="automox-device-shell"
-    REMOTE_SSH_HOST="ssh.example.com"
+    REMOTE_SSH_HOST="64.225.88.152"
     REMOTE_SSH_PORT=22
-    REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub
-    REMOTE_PRIVATE_KEY="/home/automox-device-shell/data/openssh/keys/automox-remote"
+    REMOTE_SSH_USER="root"
+    REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/polite-pub/automox-worklets/automox-remote-2.pub
+    REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
     EP_TUNNEL_PORT=43022
-    EP_USER=admin
-    EP_SSH_PRIVATE_KEY=/home/admin/.ssh/id_rsa
-    EP_SSH_PUBLIC_KEY=/root/.ssh/id_rsa.pub
+    EP_USER="root"
     ```
- - Create a new worklet, filling out the evaluation segment with `evaluation.sh` and your unique values.
+ - Create a new worklet for Linux
    - Set the Evaluation segment with `evaluation.sh` and your unique values from above.
    - Set the Remediation segment with `remediation.sh` and your unique values from above.
  - Run the worklet on a Ubuntu device.
+ - :warning: The first time the worklet runs it will likely error. Check the Automox Activity Log. This is expected because the device's public key has not yet been added to the SSH server's `authorized_keys` file. In the activity log the Details section should have a line that looks similar to the code block below. You will need to run this on the SSH server, so the device's public SSH key is authorized on the SSH server.
+     ```console
+    echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCeGicJWBZRukvhHgwRjy7WttcK0oes4qkfrJvaUuUnSJcVe/hVTOFCjD+NhBBBQy2h3+tfpeSG9FZGbI57o5nwnWOXLQ32z2RKkM0y8Q7Wf7QIIMFnvOs0mKL1v9cgFBPlbzLR/wdVUzWXoYf4jKbVeOWPy9iiZxUhFAQEDyMU/2OPUHhVhT39nPaMV0NQfMEQlSzI0TKC/h5G6soD0aNPysOGkVJapfi9yQRLx7UX6rzVTsznU4xQl+RH3jGEqrjAQIKmnkxbCit40I8wLlggbs2w3KF4uWIpyYVW7JWra2/beKnfQ6F4gVRb9PRxUKhrWWi3OmeQhSMtkL5qy/NZ >> ~/.ssh/authorized_keys
+    ```
+ - Run the worklet again after adding the devices public SSH key.
  - Login in to the remote server with ssh
- - From the remote server, running the following to SSH to into your device
+ - From the remote server, run the following to SSH to into your device
   ```ssh ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i ${REMOTE_PRIVATE_KEY}```
 
 
 ## Testing
+To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Automox and then ran the worklet on that machine.
  - Spin up 18.04 digital ocean droplet
  - SSH to box
  - Install Automox
