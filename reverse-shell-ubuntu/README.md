@@ -11,8 +11,8 @@ This script is currently a POC and not suggested for production use. It's curren
 :warning: Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04).
- - A server publicly available running SSH.
- - A publicly available public key for the SSH sever, to be added to the endpoints authorized keys.
+ - A server publicly available running SSH. Note: In order to forward traffic, your SSH server will have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
+ - A public key for the SSH sever which can be retrieved via `wget`, to be added to the endpoints authorized keys.
 
 ## Variables For Your Worket
 You will need to have criteria for the following varriables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
