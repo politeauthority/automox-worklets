@@ -3,6 +3,8 @@ This worklet creates a reverse shell from an Automox device to a remote SSH serv
 connections back to the device from the remote server, without exposing the SSH service on the
 device to the entire public.
 
+## Before You Get Started
+:warning: This script is currently a POC and not suggested for production use. It's currently tested against Ubuntu 18.04 and nothing else. *PLEASE BE AWARE* Running SSH servers explicity as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. (Hopefully in time I can create more secure examples.)
 
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04).
@@ -11,23 +13,23 @@ device to the entire public.
 
 ## Details
 You will need to have details for the following varriables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
-| Var Name      | Description |
-| ----------- | ----------- |
-| `REMOTE_SSH_HOST`      | IP or FQDN of remote server running a SSH server.       |
-| `REMOTE_SSH_PORT`      | Port on remote server running SSH (typically `22`)       |
-| `REMOTE_SSH_USER`      | User on the remote host for device to log in to.       |
-| `REMOTE_PUBLIC_KEY`   | Publically accessible file containing the public key of the SSH server user, to be added the devices `authorized_keys` file. (ex: `https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub`        |
-| `REMOTE_PRIVATE_KEY`      | Private key file on the remote service which corresponds to the public key `REMOTE_PUBLIC_KEY`  |
-| `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       |
-| `EP_USER`      | User on the device to run the tunnel as.       |
+| Var Name      | Description | Example |
+| ----------- | ----------- |  ----------- |
+| `REMOTE_SSH_HOST`      | IP or FQDN of remote server running a SSH server.       | `ssh.example.com` |
+| `REMOTE_SSH_PORT`      | Port on remote server running SSH (typically `22`)       | `22` |
+| `REMOTE_SSH_USER`      | User on the remote host for device to log in to.       | `root` |
+| `REMOTE_PUBLIC_KEY`   | Publically accessible file containing the public key of the SSH server user, to be added the devices `authorized_keys` file.        | `https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub` |
+| `REMOTE_PRIVATE_KEY`      | Private key file on the remote service which corresponds to the public key `REMOTE_PUBLIC_KEY`  | `/root/data/openssh/keys/automox-remote` |
+| `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       | `43022` |
+| `EP_USER`      | User on the device to run the tunnel as.       | `root` |
 
 ## Setup
- - Determine script vars, these values will be used in the `evaluation.sh`, `remediation.sh` and on the remote SSH server, to log into the device.
+ - Determine script vars, these values will be used in the `remediation.sh` file and on the remote SSH server, to log into the device.
     ```console
-    REMOTE_SSH_HOST="64.225.88.152"
+    REMOTE_SSH_HOST="ssh.example.com"
     REMOTE_SSH_PORT=22
     REMOTE_SSH_USER="root"
-    REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/polite-pub/automox-worklets/automox-remote-2.pub
+    REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub
     REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
     EP_TUNNEL_PORT=43022
     EP_USER="root"
