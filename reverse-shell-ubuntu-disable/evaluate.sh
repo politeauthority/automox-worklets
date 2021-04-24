@@ -1,9 +1,10 @@
 #!/bin/bash
-# Reverse Tunnel - Disable - Evaluation
-set -e
-
+# Reverse Tunnel - Disable - Evaluate
 # Check to see if the tunnel is already running, if it is exit 0, nothing more to do.
-# Otherwise we'll exit 1, so then remediation will run.
+
+set -eu
+
+
 SERVICE="ssh"
 if pgrep -x "$SERVICE" >/dev/null
 then

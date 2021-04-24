@@ -3,6 +3,10 @@ This worklet creates a reverse shell from an Automox device to a remote SSH serv
 connections back to the device from the remote server, without exposing the SSH service on the
 device to the entire public.
 
+This Worklet has a sister Worklet, 
+[Reverse Shell - Ubuntu - Disable](../reverse-shell-ubuntu-disable/README.md) which shuts the SSH
+reverse tunnel off that the script creates.
+
 ## Before You Get Started
 This script is currently a POC and not suggested for production use. It's currently tested against Ubuntu 18.04 and nothing else.
 
