@@ -12,12 +12,12 @@ EP_USER="root"
 REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
 
 # If the user is root, make special accommodations of ssh paths
-if [ "$REMOTE_SSH_USER" = "root" ]; then
+if [ "$EP_USER" = "root" ]; then
     EP_SSH_KEY="/root/.ssh/id_rsa"
     EP_SSH_AUTHORIZED_KEYS="/root/.ssh/authorized_keys"
 else
     echo "REMOTE_SSH_USER is NOT root.\n"
-    EP_SSH_KEY="/home/${REMOTE_SSH_USER}/.ssh/id_rsa"
+    EP_SSH_KEY="/home/${EP_USER}/.ssh/id_rsa"
     EP_SSH_AUTHORIZED_KEYS="/home/${REMOTE_SSH_USER}/.ssh/authorized_keys"
 fi
 EP_SSH_PUBLIC_KEY="${EP_SSH_KEY}.pub"
