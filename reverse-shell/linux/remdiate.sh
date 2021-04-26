@@ -6,15 +6,19 @@
 #  - Check for an SSH key pair to use, if one doesn't exist make it.
 #  - Download the SSH server public key and install it in the devices authorized_keys
 #  - Try to establish the SSH tunnel from the device to the remote SSH server.
+
 set -eu
 
-REMOTE_SSH_HOST="64.225.88.152"
-REMOTE_SSH_PORT=2222
+# User configurable variables
+REMOTE_SSH_HOST="8.8.8.8"
+REMOTE_SSH_PORT=22
 REMOTE_SSH_USER="automox"
-REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/polite-pub/automox-worklets/automox-remote.pub
+REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/some-bucket/automox-worklets/automox-remote.pub
 REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
 EP_TUNNEL_PORT=43024
 EP_USER="root"
+# End user configurable variables
+
 
 # If the user is root, make special accommodations of ssh paths.
 if [ "$EP_USER" = "root" ]; then

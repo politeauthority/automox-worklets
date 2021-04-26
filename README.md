@@ -10,5 +10,4 @@ Whatever you can script, you can turn into a Worklet. While the applications for
 [More on Automox Worklets](https://www.automox.com)
 
 ## Current
-- [Reverse Shell - Ubuntu](reverse-shell-ubuntu/README.md)
-- [Reverse Shell - Ubuntu - Disable](reverse-shell-ubuntu-disable/README.md)
+- [Reverse Shell](reverse-shell/README.md)
