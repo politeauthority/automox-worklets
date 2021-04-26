@@ -77,7 +77,7 @@ To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Au
 
 ## Docker Container as SSH Server
 This section assumes you have a base line understanding of Docker, running containers and have already installed Docker on the server.
-
+### Security Advantages
 Running the SSH server your worklet connects to in a Docker container has multiple security advantages.
  - It limits the access the device has to your server. The device will only be connected to a very minimal server, and not have access to the server as a whole.
  - Docker containers can be very ephemeral, and shutdown anytime you dont expect or want remote connections. The server can be shutdown with just `docker stop openssh`.
@@ -107,8 +107,11 @@ More info about this docker image, and other available options at [https://hub.d
       ghcr.io/linuxserver/openssh-server
     ```
     `REMOTE_SSH_USER` - The same value as described in [Worklet Variables](#worklet-variables) above.
+    
     `REMOTE_SSH_PORT` - The same value as described in [Worklet Variables](#worklet-variables) above.
+    
     `EP_TUNNEL_PORT` - The same value as described in [Worklet Variables](#worklet-variables) above.
+    
     `PERSISTANCE_PATH` - The path on the machine running the Docker container where we will persist the important values of the container, this where `authorized_keys` and other configuration values where live.
 
  - **Configure** 
