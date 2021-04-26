@@ -83,31 +83,54 @@ Running the SSH server your worklet connects to in a Docker container has multip
 
 ### Run the Container
 More info about this docker image, and other available options at [https://hub.docker.com/r/linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server).
-```console
-REMOTE_SSH_USER=automox
-REMOTE_SSH_PORT=2222
-EP_TUNNEL_PORT=43022
-PERSISTANCE_PATH=/empty/dir/on/ssh-server
+ - **Setup**
+ First lets create a directory on your system to persist the containers data, lets say `/home/user/openssh/`, or what we will call `${PERSISTANCE_PATH}`. Here also create a dir called `config` and `keys`. In the `keys` directory put the private and public key that correspond to the `REMOTE_PUBLIC_KEY` used previously, these will be used to connect to the unnel
+ - **Start Container:** 
+ Next we will start the Open SSH server container.
+    ```console
+    REMOTE_SSH_USER=automox
+    REMOTE_SSH_PORT=2222
+    EP_TUNNEL_PORT=43022
+    PERSISTANCE_PATH=/empty/dir/on/ssh-server
+    
+    docker run -d \
+      --name=openssh \
+      -e PUID=1000 \
+      -e PGID=1000 \
+      -e USER_NAME=${REMOTE_SSH_USER} \
+      -p ${EP_TUNNEL_PORT}:${EP_TUNNEL_PORT} \
+      -p ${REMOTE_SSH_PORT}:${REMOTE_SSH_PORT} \
+      -v ${PERSISTANCE_PATH}/config:/config \
+      -v ${PERSISTANCE_PATH}/keys:/keys \
+      --restart=always \
+      ghcr.io/linuxserver/openssh-server
+    ```
+    `REMOTE_SSH_USER` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+    `REMOTE_SSH_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+    `EP_TUNNEL_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+    `PERSISTANCE_PATH` - The path on the machine running the Docker container where we will persist the important values of the container, this where `authorized_keys` and other configuration values where live.
 
-docker run -d \
-  --name=openssh \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e USER_NAME=${REMOTE_SSH_USER} \
-  -p ${EP_TUNNEL_PORT}:${EP_TUNNEL_PORT} \
-  -p ${REMOTE_SSH_PORT}:${REMOTE_SSH_PORT} \
-  -v ${PERSISTANCE_PATH}:/config \
-  --restart=always \
-  ghcr.io/linuxserver/openssh-server
-```
-`REMOTE_SSH_USER` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
-`REMOTE_SSH_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
-`EP_TUNNEL_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
-`PERSISTANCE_PATH` - The path on the machine running the Docker container where we will persist the important values of the container, this where `authorized_keys` and other configuration values where live.
-
-### Configure the Container
-As mentioned in the [What You Will Need](##-What-You-Will-Need) section, we need to configure the container's SSHD configurtaion to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
+ - **Configure** 
+ As mentioned in the [What You Will Need](##-What-You-Will-Need) section, we need to configure the container's SSHD configurtaion to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/config/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
 This will require a container restart to take effect. ```docker restart openssh``` :memo: This will kill any active tunnels.
+ - **Adding Devices**
+ To add your device's public keys, you will now add them to the file `${PERSISTANCE_PATH}/config/.ssh/authorized_keys`. According to the containers documentation, changes to the authorized_keys file to take effect you will also need to restart the container.
+ - **Connect**
+A this point you should be able to have a device connect to your SSH server running in docker. To connect to the device;
+ - Log in to the container, from the server running the container, run `docker exec -it openssh bash`
+ - Then run `ssh -o StrictHostKeyChecking=no ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i /keys/private_key`
+- **Access Tunnel**
+Once you have the container up and running and have a device connected, we need to access that tunnel.
+From the SSH server run the following.
+  - Connect to the OpenSSH docker container, `docker exec -it openssh bash`
+  - SSH into the tunnel, this will require the private key portion to the public key you send down to the device that we set with  `REMOTE_PUBLIC_KEY`.
+    ```
+    ssh \
+    -o StrictHostKeyChecking=no \
+    ${REMOTE_SSH_USER}@localhost \
+    -p ${EP_TUNNEL_PORT} \
+    -i /keys/your-private-key
+    ```
 
 ## Trouble Shooting
 
