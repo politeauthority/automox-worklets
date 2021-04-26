@@ -49,8 +49,9 @@ if test -f ${EP_SSH_AUTHORIZED_KEYS}; then
 fi
 rm remote_public_key.pub
 
+# Report the device's public SSH key so it will be available in the Automox activity log.
 PUBLIC_KEY=$(cat ${EP_SSH_PUBLIC_KEY})
-echo "Run the following from the remote to add the device key                                     "
+echo "Run the following from the remote to add the device key."
 echo "echo ${PUBLIC_KEY} >> ~/.ssh/authorized_keys"
 
 # Start the SSH tunnel.

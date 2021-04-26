@@ -58,6 +58,9 @@ You will need to have criteria for the following variables. These values will be
  - From the remote server, run the following to SSH to into your device
   ```ssh ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i ${REMOTE_PRIVATE_KEY}```
 
+## Tear Down
+To ensure termination of the SSH tunnel, you will need to create another Worklet
+
 ## Docker Container as SSH Server
 This section assumes you have a base line understanding of Docker and have already installed Docker on the server.
 ### Security Advantages
