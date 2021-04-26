@@ -10,7 +10,7 @@ reverse tunnel off that this Worklet creates.
 ## Before You Get Started
 This script, though functional, is currently a POC and not suggested for production use. Currently it only been throughly tested against Ubuntu 18.04 and Fedora 33. I am hoping to test this with linux distros soon.
 
-:warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. (Hopefully in time I can create more secure examples.)
+:warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. I have put together a section about running an Open SSH server on a linux machine through a [Docker container]() which helps alleviate _some_ security concerns, but is by no means perfect. I will continute to update this Worklet to address security concerns.
 
 :warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
 
@@ -76,10 +76,11 @@ To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Au
  - Connect to device from SSH server
 
 ## Docker Container as SSH Server
+This section assumes you have a base line understanding of Docker, running containers and have already installed Docker on the server.
+
 Running the SSH server your worklet connects to in a Docker container has multiple security advantages.
- - It limits the access the device has to your server. The account/ machine the tunnel exposes can be limited to an
- - Create an empty directory that will be mounted to the Open SSH container to presist data between
- instances of the container running.
+ - It limits the access the device has to your server. The device will only be connected to a very minimal server, and not have access to the server as a whole.
+ - Docker containers can be very ephemeral, and shutdown anytime you dont expect or want remote connections. The server can be shutdown with just `docker stop openssh`.
 
 ### Run the Container
 More info about this docker image, and other available options at [https://hub.docker.com/r/linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server).
@@ -105,13 +106,13 @@ More info about this docker image, and other available options at [https://hub.d
       --restart=always \
       ghcr.io/linuxserver/openssh-server
     ```
-    `REMOTE_SSH_USER` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
-    `REMOTE_SSH_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
-    `EP_TUNNEL_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+    `REMOTE_SSH_USER` - The same value as described in [Worklet Variables](#worklet-variables) above.
+    `REMOTE_SSH_PORT` - The same value as described in [Worklet Variables](#worklet-variables) above.
+    `EP_TUNNEL_PORT` - The same value as described in [Worklet Variables](#worklet-variables) above.
     `PERSISTANCE_PATH` - The path on the machine running the Docker container where we will persist the important values of the container, this where `authorized_keys` and other configuration values where live.
 
  - **Configure** 
- As mentioned in the [What You Will Need](##-What-You-Will-Need) section, we need to configure the container's SSHD configurtaion to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/config/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
+ As mentioned in the [What You Will Need](#what-you-will-need) section, we need to configure the container's SSHD configurtaion to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/config/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
 This will require a container restart to take effect. ```docker restart openssh``` :memo: This will kill any active tunnels.
  - **Adding Devices**
  To add your device's public keys, you will now add them to the file `${PERSISTANCE_PATH}/config/.ssh/authorized_keys`. According to the containers documentation, changes to the authorized_keys file to take effect you will also need to restart the container.
