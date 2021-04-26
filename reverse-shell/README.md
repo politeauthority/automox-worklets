@@ -12,7 +12,7 @@ This script, though functional, is currently a POC and not suggested for product
 
 :warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuances of running a public SSH server. I have put together a section about running an Open SSH server on a linux machine through a [Docker container](#docker-container-as-ssh-server) which helps alleviate _some_ security concerns, but is by no means perfect. I will continute to update this Worklet to address security concerns.
 
-:warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
+:warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to attach this worklet to only one device at a time for now.
 
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04+/ Fedora 33+).
@@ -31,12 +31,12 @@ You will need to have criteria for the following variables. These values will be
 | `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       | `43022` |
 | `EP_USER`      | User on the device to run the tunnel as.       | `root` |
 
-`REMOTE_PUBLIC_KEY` - This is a file which needs to be accessible from the end point via `wget`.
+`REMOTE_PUBLIC_KEY` - This is a file which needs to be accessible from the end point via `curl`.
 
 `EP_TUNNEL_PORT` - This is the port which the endpoint will create the tunnel on, which you will connect on through your SSH server.
 
 ## Setup
- - Determine script vars, mentioned above. These values will be used in the `remediation.sh` file and on the remote SSH server to log into the device.
+ - Determine script vars, mentioned above. These values will be used in the [remediate.sh](linux/remediate.sh) file and on the remote SSH server to log into the device.
     ```console
     REMOTE_SSH_HOST="ssh.example.com"
     REMOTE_SSH_PORT=22
@@ -48,7 +48,7 @@ You will need to have criteria for the following variables. These values will be
     ```
  - Create a new worklet for Linux
    - Set the Evaluation segment with [linux/evaluate.sh](linux/evaluate.sh), this script should not require modification.
-   - Set the Remediation segment with [linux/remdiate.sh](linux/remdiate.sh) and your unique values from above.
+   - Set the Remediation segment with [linux/remediate.sh](linux/remdiate.sh) and your unique values from above.
  - Run the worklet on a Linux device.
 
  - :warning: The first time the worklet runs it will likely error. Check the Automox Activity Log. This is expected because the device's public key has not yet been added to the SSH server's `authorized_keys` file. In the activity log the Details section should have a line that looks similar to the code block below. You will need to run this on the SSH server, so the device's public SSH key is authorized on the SSH server.
@@ -80,12 +80,12 @@ This section assumes you have a base line understanding of Docker, running conta
 ### Security Advantages
 Running the SSH server your worklet connects to in a Docker container has multiple security advantages.
  - It limits the access the device has to your server. The device will only be connected to a very minimal server, and not have access to the server as a whole.
- - Docker containers can be very ephemeral, and shutdown anytime you dont expect or want remote connections. The server can be shutdown with just `docker stop openssh`.
+ - Docker containers can be very ephemeral, and shutdown anytime you don't expect or want remote connections. The server can be shutdown with just `docker stop openssh`.
 
 ### Setup and Manage Container
 More info about this docker image, and other available options at [https://hub.docker.com/r/linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server).
  - **Setup**
- First lets create a directory on your system to persist the containers data, lets say `/home/user/openssh/`, or what we will call `${PERSISTANCE_PATH}`. Here also create a dir called `config` and `keys`. In the `keys` directory put the private and public key that correspond to the `REMOTE_PUBLIC_KEY` used previously, these will be used to connect to the unnel
+ First lets create a directory on your system to persist the containers data, lets say `/home/user/openssh/`, or what we will call `${PERSISTANCE_PATH}`. Here also create a dir called `config` and `keys`. In the `keys` directory put the private and public key that correspond to the `REMOTE_PUBLIC_KEY` used previously, these will be used to connect to the tunnel
  - **Start Container:** 
  Next we will start the Open SSH server container.
     ```console
@@ -115,7 +115,7 @@ More info about this docker image, and other available options at [https://hub.d
     `PERSISTANCE_PATH` - The path on the machine running the Docker container where we will persist the important values of the container, this where `authorized_keys` and other configuration values where live.
 
  - **Configure** 
- As mentioned in the [What You Will Need](#what-you-will-need) section, we need to configure the container's SSHD configurtaion to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/config/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
+ As mentioned in the [What You Will Need](#what-you-will-need) section, we need to configure the container's SSHD configuration to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/config/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
 This will require a container restart to take effect. ```docker restart openssh``` :memo: This will kill any active tunnels.
  - **Adding Devices**
  To add your device's public keys, you will now add them to the file `${PERSISTANCE_PATH}/config/.ssh/authorized_keys`. According to the containers documentation, changes to the authorized_keys file to take effect you will also need to restart the container.
@@ -144,11 +144,11 @@ Explain these
 `ssh_exchange_identification: read: Connection reset by peer`
 
 ## Road Map
-There are a number of other features I would like to add to this worklet, and I welcome gladly feedback and any help! A couple of things on the radar currenty are...
+There are a number of other features I would like to add to this worklet, and I welcome gladly feedback and any help! A couple of things on the radar currently are...
  - Wider testing on various Linux distros (Ubuntu 20+, Fedora)
- - MacOS support (this will be done as a seprate worklet though)
+ - MacOS support (this will be done as a septate worklet though)
  - Better setup instructions and guide for running an SSH server in Docker.
- - Potential for more control arround generating/ supplying SSH keys.
+ - Potential for more control around generating/ supplying SSH keys.
 
 
 
