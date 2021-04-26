@@ -19,7 +19,7 @@ This script, though functional, is currently a POC and not suggested for product
  - A server publicly available running SSH. Note: In order to forward traffic, your SSH server will have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
  - A public key for the SSH sever which can be retrieved via `curl`, to be added to the endpoints authorized keys.
 
-## Variables For Your Worket
+## Worklet Variables
 You will need to have criteria for the following variables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
 | Var Name      | Description | Example |
 | ----------- | ----------- |  ----------- |
@@ -100,7 +100,7 @@ docker run -d \
   --restart=always \
   ghcr.io/linuxserver/openssh-server
 ```
-`REMOTE_SSH_USER` - The same value as described in [Worklet Variables](#Woklet Variables)
+`REMOTE_SSH_USER` - The same value as described in [Worklet Variables](##Worklet-Variables)
 
 ## Trouble Shooting
 
