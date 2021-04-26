@@ -1,4 +1,4 @@
-# Reverse Shell - Linux v0.0.1
+# Reverse Shell v0.0.2
 This worklet creates a reverse SSH tunnel from an Automox device to a remote SSH server, allowing SSH 
 connections back to the device from the remote server, without exposing the SSH service on the
 device to the entire public.

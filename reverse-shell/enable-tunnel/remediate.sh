@@ -1,37 +1,35 @@
 #!/bin/bash
-# Reverse Tunnel - Remediation
-# Creates a reverse tunnel between a device and an SSH server.
-#
-# Steps
-#  - Check for an SSH key pair to use, if one doesn't exist make it.
-#  - Download the SSH server public key and install it in the devices authorized_keys
-#  - Try to establish the SSH tunnel from the device to the remote SSH server.
+# Reverse Tunnel macOS - Remediate
 
 set -eu
-
 # User configurable variables
-REMOTE_SSH_HOST="8.8.8.8"
-REMOTE_SSH_PORT=22
+REMOTE_SSH_HOST="64.225.88.152"
+REMOTE_SSH_PORT=2222
 REMOTE_SSH_USER="automox"
-REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/some-bucket/automox-worklets/automox-remote.pub
+REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/polite-pub/automox-worklets/automox-remote.pub
 REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
-EP_TUNNEL_PORT=43024
-EP_USER="root"
+EP_TUNNEL_PORT=43025
 # End user configurable variables
+EP_USER="root"
 
 
-# If the user is root, make special accommodations of ssh paths.
-if [ "$EP_USER" = "root" ]; then
-    EP_SSH_KEY="/root/.ssh/id_rsa"
-    EP_SSH_AUTHORIZED_KEYS="/root/.ssh/authorized_keys"
-else
-    echo "REMOTE_SSH_USER is NOT root.\n"
-    EP_SSH_KEY="/home/${EP_USER}/.ssh/id_rsa"
-    EP_SSH_AUTHORIZED_KEYS="/home/${REMOTE_SSH_USER}/.ssh/authorized_keys"
+# Check the OS we're running on.
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform
+    OS_KIND='macOS'
+    ROOT_HOME="/var/root"
+    echo 'its mac'
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    # Do something under GNU/Linux platform
+    OS_KIND='linux'
+    ROOT_HOME="/root"
+    echo 'its Linux'
 fi
-EP_SSH_PUBLIC_KEY="${EP_SSH_KEY}.pub"
 
 # Check for an ssh key pair on the endpoint, if there isn't one generate one and echo it.
+EP_SSH_KEY="${ROOT_HOME}/.ssh/id_rsa"
+EP_SSH_AUTHORIZED_KEYS="${ROOT_HOME}/.ssh/authorized_keys"
+EP_SSH_PUBLIC_KEY="${EP_SSH_KEY}.pub"
 if ! test -f ${EP_SSH_KEY}; then
     echo "Generating SSH key pair.\n"
     echo "${EP_SSH_KEY} does not exist, generating now.\n"
