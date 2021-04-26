@@ -46,7 +46,7 @@ You will need to have criteria for the following variables. These values will be
     ```
  - Create a new worklet for Linux
    - Set the Evaluation segment with [enable-tunnel/evaluate.sh](enable-tunnel/evaluate.sh), this script should not require modification.
-   - Set the Remediation segment with [enable-tunnel/remediate.sh](enable-tunnel/remdiate.sh) and your unique values from above.
+   - Set the Remediation segment with [enable-tunnel/remediate.sh](enable-tunnel/remediate.sh) and your unique values from above.
  - Run the worklet on a Linux device.
 
  - :warning: The first time the worklet runs it will likely error. Check the Automox Activity Log. This is expected because the device's public key has not yet been added to the SSH server's `authorized_keys` file. In the activity log the Details section should have a line that looks similar to the code block below. You will need to run this on the SSH server, so the device's public SSH key is authorized on the SSH server.
