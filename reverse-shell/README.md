@@ -85,8 +85,8 @@ Running the SSH server your worklet connects to in a Docker container has multip
 More info about this docker image, and other available options at [https://hub.docker.com/r/linuxserver/openssh-server](https://hub.docker.com/r/linuxserver/openssh-server).
 ```console
 REMOTE_SSH_USER=automox
-EP_TUNNEL_PORT=43022
 REMOTE_SSH_PORT=2222
+EP_TUNNEL_PORT=43022
 PERSISTANCE_PATH=/empty/dir/on/ssh-server
 
 docker run -d \
@@ -100,7 +100,14 @@ docker run -d \
   --restart=always \
   ghcr.io/linuxserver/openssh-server
 ```
-`REMOTE_SSH_USER` - The same value as described in [Worklet Variables](##Worklet-Variables)
+`REMOTE_SSH_USER` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+`REMOTE_SSH_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+`EP_TUNNEL_PORT` - The same value as described in [Worklet Variables](##-Worklet-Variables) above.
+`PERSISTANCE_PATH` - The path on the machine running the Docker container where we will persist the important values of the container, this where `authorized_keys` and other configuration values where live.
+
+### Configure the Container
+As mentioned in the [What You Will Need](##-What-You-Will-Need) section, we need to configure the container's SSHD configurtaion to allow TCP forwarding. To do this edit the file `${PERSISTANCE_PATH}/ssh_host_keys/sshd_config` and find the line `AllowTcpForwarding` and set the value to `yes`.
+This will require a container restart to take effect. ```docker restart openssh``` :memo: This will kill any active tunnels.
 
 ## Trouble Shooting
 
