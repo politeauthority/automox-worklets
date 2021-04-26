@@ -11,7 +11,5 @@ if ! [[ $SEARCH_CMD =~ $re ]] ; then
    echo "Tunnel is not running" >&2; exit 1
 else
     echo "Tunnel is running"
-    kill ${SEARCH_CMD}
-    echo "Killed tunnel"
     exit 0
 fi
