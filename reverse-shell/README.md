@@ -10,7 +10,7 @@ reverse tunnel off that this Worklet creates.
 ## Before You Get Started
 This script, though functional, is currently a POC and not suggested for production use. Currently it only been throughly tested against Ubuntu 18.04 and Fedora 33. I am hoping to test this with linux distros soon.
 
-:warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuiances of running a public SSH server. I have put together a section about running an Open SSH server on a linux machine through a [Docker container](#docker-container-as-ssh-server) which helps alleviate _some_ security concerns, but is by no means perfect. I will continute to update this Worklet to address security concerns.
+:warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuances of running a public SSH server. I have put together a section about running an Open SSH server on a linux machine through a [Docker container](#docker-container-as-ssh-server) which helps alleviate _some_ security concerns, but is by no means perfect. I will continute to update this Worklet to address security concerns.
 
 :warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to attatch this worklet to only one device at a time for now.
 
