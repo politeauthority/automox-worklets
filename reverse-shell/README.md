@@ -76,7 +76,7 @@ To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Au
  - Connect to device from SSH server
 
 ## Docker Container as SSH Server
-This section assumes you have a base line understanding of Docker, running containers and have already installed Docker on the server.
+This section assumes you have a base line understanding of Docker and have already installed Docker on the server.
 ### Security Advantages
 Running the SSH server your worklet connects to in a Docker container has multiple security advantages.
  - It limits the access the device has to your server. The device will only be connected to a very minimal server, and not have access to the server as a whole.
