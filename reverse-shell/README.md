@@ -1,14 +1,14 @@
-# Reverse Shell v0.0.2
+# Reverse Shell v0.0.3
 This worklet creates a reverse SSH tunnel from an Automox device to a remote SSH server, allowing SSH 
 connections back to the device from the remote server, without exposing the SSH service on the
 device to the entire public.
 
 This Worklet has a sister Worklet, 
-[Reverse Shell Linux - Disable](./linux-disable/README.md) which shuts the SSH
-reverse tunnel off that this Worklet creates.
+[Reverse Shell - Disable](./disable-tunnel) which stops the SSH
+reverse tunnel that this Worklet creates.
 
 ## Before You Get Started
-This script, though functional, is currently a POC and not suggested for production use. Currently it only been throughly tested against Ubuntu 18.04 and Fedora 33. I am hoping to test this with linux distros soon.
+This script, though functional, is currently a POC and not suggested for production use. Currently it only been throughly tested against Ubuntu 18.04 and Fedora 33. I am hoping to test this with more linux distros soon.
 
 :warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuances of running a public SSH server. I have put together a section about running an Open SSH server on a linux machine through a [Docker container](#docker-container-as-ssh-server) which helps alleviate _some_ security concerns, but is by no means perfect. I will continute to update this Worklet to address security concerns.
 
@@ -29,26 +29,24 @@ You will need to have criteria for the following variables. These values will be
 | `REMOTE_PUBLIC_KEY`   | Publicly accessible file containing the public key of the SSH server user, to be added the devices `authorized_keys` file.        | `https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub` |
 | `REMOTE_PRIVATE_KEY`      | Private key file on the remote service which corresponds to the public key `REMOTE_PUBLIC_KEY`  | `/root/data/openssh/keys/automox-remote` |
 | `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       | `43022` |
-| `EP_USER`      | User on the device to run the tunnel as.       | `root` |
 
 `REMOTE_PUBLIC_KEY` - This is a file which needs to be accessible from the end point via `curl`.
 
 `EP_TUNNEL_PORT` - This is the port which the endpoint will create the tunnel on, which you will connect on through your SSH server.
 
 ## Setup
- - Determine script vars, mentioned above. These values will be used in the [remediate.sh](linux/remediate.sh) file and on the remote SSH server to log into the device.
+ - Determine script vars, mentioned above. These values will be used in the [remediate.sh](enable-tunnel/remediate.sh) file and on the remote SSH server to log into the device.
     ```console
     REMOTE_SSH_HOST="ssh.example.com"
-    REMOTE_SSH_PORT=22
-    REMOTE_SSH_USER="root"
-    REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub
+    REMOTE_SSH_PORT=2222
+    REMOTE_SSH_USER="automox"
+    REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/a-public-bucket/automox-worklets/automox-remote.pub
     REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
     EP_TUNNEL_PORT=43022
-    EP_USER="root"
     ```
  - Create a new worklet for Linux
-   - Set the Evaluation segment with [linux/evaluate.sh](linux/evaluate.sh), this script should not require modification.
-   - Set the Remediation segment with [linux/remediate.sh](linux/remdiate.sh) and your unique values from above.
+   - Set the Evaluation segment with [enable-tunnel/evaluate.sh](enable-tunnel/evaluate.sh), this script should not require modification.
+   - Set the Remediation segment with [enable-tunnel/remediate.sh](enable-tunnel/remdiate.sh) and your unique values from above.
  - Run the worklet on a Linux device.
 
  - :warning: The first time the worklet runs it will likely error. Check the Automox Activity Log. This is expected because the device's public key has not yet been added to the SSH server's `authorized_keys` file. In the activity log the Details section should have a line that looks similar to the code block below. You will need to run this on the SSH server, so the device's public SSH key is authorized on the SSH server.
@@ -59,21 +57,6 @@ You will need to have criteria for the following variables. These values will be
  - Login in to the remote server with ssh
  - From the remote server, run the following to SSH to into your device
   ```ssh ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i ${REMOTE_PRIVATE_KEY}```
-
-## Testing
-To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Automox and then ran the worklet on that machine.
- - Spin up 18.04 digital ocean droplet
- - SSH to box
- - Install Automox
-  ```curl -sS "https://console.automox.com/downloadInstaller?accesskey=your-key" | bash```
-  ```service amagent start```
-
- - Add device to group with worklet
- - Run system updates
- - Run worklet
- - Copy public key to SSH Services authorized_keys
- - Run worklet again
- - Connect to device from SSH server
 
 ## Docker Container as SSH Server
 This section assumes you have a base line understanding of Docker and have already installed Docker on the server.
@@ -137,19 +120,34 @@ From the SSH server run the following.
     ```
 
 ## Trouble Shooting
+If things are not going well, here are some debugging tips.
 
-Explain these
-`tail -f /var/log/auth.log | grep -i ssh`
+Checkout the auth logs on your SSH server, for _most_ debian systems this will be located at `tail -f /var/log/auth.log`.
+I often use the command `tail -f /var/log/auth.log | grep -i ssh`, so I can watch connections live while I debug.
 
-`ssh_exchange_identification: read: Connection reset by peer`
+If you receive the error `ssh_exchange_identification: read: Connection reset by peer` when trying
+to connect to your tunnel from the SSH server, this may mean the `${EP_TUNNEL_PORT}` you are using
+is already in use, trying killing other tunnel connections, or changing this port.
+
 
 ## Road Map
 There are a number of other features I would like to add to this worklet, and I welcome gladly feedback and any help! A couple of things on the radar currently are...
+ - MacOs support is very close to being released!
  - Wider testing on various Linux distros (Ubuntu 20+, Fedora)
- - MacOS support (this will be done as a septate worklet though)
- - Better setup instructions and guide for running an SSH server in Docker.
+ - Better setup instructions.
  - Potential for more control around generating/ supplying SSH keys.
 
+## Testing
+To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Automox and then ran the worklet on that machine.
+ - Spin up 18.04 digital ocean droplet
+ - SSH to box
+ - Install Automox
+  ```curl -sS "https://console.automox.com/downloadInstaller?accesskey=your-key" | bash```
+  ```service amagent start```
 
-
-
+ - Add device to group with worklet
+ - Run system updates
+ - Run worklet
+ - Copy public key to SSH Services authorized_keys
+ - Run worklet again
+ - Connect to device from SSH server
