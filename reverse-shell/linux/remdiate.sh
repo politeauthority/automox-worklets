@@ -9,11 +9,11 @@
 set -eu
 
 REMOTE_SSH_HOST="64.225.88.152"
-REMOTE_SSH_PORT=22
-REMOTE_SSH_USER="root"
+REMOTE_SSH_PORT=2222
+REMOTE_SSH_USER="automox"
 REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/polite-pub/automox-worklets/automox-remote.pub
 REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
-EP_TUNNEL_PORT=43022
+EP_TUNNEL_PORT=43024
 EP_USER="root"
 
 # If the user is root, make special accommodations of ssh paths.
