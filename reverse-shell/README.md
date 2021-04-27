@@ -1,11 +1,18 @@
-# Reverse Shell v0.0.3
+# Reverse Shell v0.0.4
 This worklet creates a reverse SSH tunnel from an Automox device to a remote SSH server, allowing SSH 
 connections back to the device from the remote server, without exposing the SSH service on the
 device to the entire public.
 
 This Worklet has a sister Worklet, 
-[Reverse Shell - Disable](./disable-tunnel) which stops the SSH
-reverse tunnel that this Worklet creates.
+[Reverse Shell - Disable](./disable-tunnel) which stops the SSH reverse tunnel that this Worklet
+creates.
+
+## What This Does
+This worklet will create a secure encrypted SSH tunnel between an Automox device, and an SSH server.
+Opening a tunnel this way will allow you to have an SSH session with a device without exposing SSH
+to the public internet. This script works without passwords, only SSH RSA keys. In the case that a
+device does not have any SSH keys suitable for use, it will create a pair, and send the public key
+in a way that you can retrieve through the Activity Log in the Automox console.
 
 ## Before You Get Started
 This script, though functional, is currently a POC and not suggested for production use. Currently it only been throughly tested against Ubuntu 18.04 and Fedora 33. I am hoping to test this with more linux distros soon.
@@ -16,8 +23,8 @@ This script, though functional, is currently a POC and not suggested for product
 
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04+/ Fedora 33+).
- - A server publicly available running SSH. Note: In order to forward traffic, your SSH server will have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
- - A public key for the SSH sever which can be retrieved via `curl`, to be added to the endpoints authorized keys.
+ - A server publicly available running SSH. :note: In order to forward traffic, your SSH server will have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
+ - An SSH key pair, with a public key which can be retrieved via `curl`, to be added to the endpoints authorized keys.
 
 ## Worklet Variables
 You will need to have criteria for the following variables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
@@ -29,6 +36,8 @@ You will need to have criteria for the following variables. These values will be
 | `REMOTE_PUBLIC_KEY`   | Publicly accessible file containing the public key of the SSH server user, to be added the devices `authorized_keys` file.        | `https://f001.backblazeb2.com/file/example/automox-worklets/reverse-shell-ubuntu.pub` |
 | `REMOTE_PRIVATE_KEY`      | Private key file on the remote service which corresponds to the public key `REMOTE_PUBLIC_KEY`  | `/root/data/openssh/keys/automox-remote` |
 | `EP_TUNNEL_PORT`      | Port on the device to tunnel with. This is pretty open, `43022` is a good choice.       | `43022` |
+| `EP_USER`      | The user on the device initiating the tunnel, for linux and macOs this will always be root and does not need to be set.| `root` |
+
 
 `REMOTE_PUBLIC_KEY` - This is a file which needs to be accessible from the end point via `curl`.
 
@@ -59,10 +68,17 @@ You will need to have criteria for the following variables. These values will be
   ```ssh ${EP_USER}@localhost -p ${EP_TUNNEL_PORT} -i ${REMOTE_PRIVATE_KEY}```
 
 ## Tear Down
-To ensure termination of the SSH tunnel, you will need to create another Worklet
+To ensure termination of the SSH tunnel, you will need to create another Worklet which will
+terminate the reverse tunnel on the device. Luckily this is very simple, and should not require any
+modification of the scripts provided here.
+ - Create a new worklet
+ - Copy the data from [Disable Evaluate](disable-tunnel/evaluate.sh) into the evaluation section.
+ - Copy the data from [Disable Remediate](disable-tunnel/remediate .sh) into the remediation section.
+ - Apply to devices and run as needed.
 
 ## Docker Container as SSH Server
 This section assumes you have a base line understanding of Docker and have already installed Docker on the server.
+
 ### Security Advantages
 Running the SSH server your worklet connects to in a Docker container has multiple security advantages.
  - It limits the access the device has to your server. The device will only be connected to a very minimal server, and not have access to the server as a whole.
@@ -125,7 +141,7 @@ From the SSH server run the following.
 ## Trouble Shooting
 If things are not going well, here are some debugging tips.
 
-Checkout the auth logs on your SSH server, for _most_ debian systems this will be located at `tail -f /var/log/auth.log`.
+Checkout the auth logs on your SSH server, for _most_ debian systems this will be located at `/var/log/auth.log`.
 I often use the command `tail -f /var/log/auth.log | grep -i ssh`, so I can watch connections live while I debug.
 
 If you receive the error `ssh_exchange_identification: read: Connection reset by peer` when trying
@@ -139,18 +155,3 @@ There are a number of other features I would like to add to this worklet, and I 
  - Wider testing on various Linux distros (Ubuntu 20+, Fedora)
  - Better setup instructions.
  - Potential for more control around generating/ supplying SSH keys.
-
-## Testing
-To test this I spun up a VPS in digital ocean running ubuntu 18.04, installed Automox and then ran the worklet on that machine.
- - Spin up 18.04 digital ocean droplet
- - SSH to box
- - Install Automox
-  ```curl -sS "https://console.automox.com/downloadInstaller?accesskey=your-key" | bash```
-  ```service amagent start```
-
- - Add device to group with worklet
- - Run system updates
- - Run worklet
- - Copy public key to SSH Services authorized_keys
- - Run worklet again
- - Connect to device from SSH server

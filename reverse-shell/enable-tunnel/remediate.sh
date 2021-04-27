@@ -1,34 +1,35 @@
 #!/bin/bash
-# Reverse Tunnel macOS - Remediate
+# Reverse Tunnel - Remediate
 
 set -eu
 # User configurable variables
 REMOTE_SSH_HOST="ssh.example.com"
-REMOTE_SSH_PORT=2222
+REMOTE_SSH_PORT=22
 REMOTE_SSH_USER="automox"
 REMOTE_PUBLIC_KEY=https://f001.backblazeb2.com/file/a-public-bucket/automox-worklets/automox-remote.pub
 REMOTE_PRIVATE_KEY="/root/data/openssh/keys/automox-remote"
-EP_TUNNEL_PORT=43025
+EP_TUNNEL_PORT=43022
 # End user configurable variables
-EP_USER="root"
 
+
+EP_USER="root"
 
 # Check the OS we're running on.
 if [ "$(uname)" == "Darwin" ]; then
     # Do something under Mac OS X platform
     OS_KIND='macOS'
-    ROOT_HOME="/var/root"
+    USER_HOME="/var/root"
     echo 'its mac'
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     # Do something under GNU/Linux platform
     OS_KIND='linux'
-    ROOT_HOME="/root"
+    USER_HOME="/root"
     echo 'its Linux'
 fi
 
 # Check for an ssh key pair on the endpoint, if there isn't one generate one and echo it.
-EP_SSH_KEY="${ROOT_HOME}/.ssh/id_rsa"
-EP_SSH_AUTHORIZED_KEYS="${ROOT_HOME}/.ssh/authorized_keys"
+EP_SSH_KEY="${USER_HOME}/.ssh/id_rsa"
+EP_SSH_AUTHORIZED_KEYS="${USER_HOME}/.ssh/authorized_keys"
 EP_SSH_PUBLIC_KEY="${EP_SSH_KEY}.pub"
 if ! test -f ${EP_SSH_KEY}; then
     echo "Generating SSH key pair.\n"
@@ -40,6 +41,10 @@ fi
 # Fetch the remote public key and add it to the device's authorized_keys file if it does not exist
 # there already.
 curl ${REMOTE_PUBLIC_KEY} --silent --output remote_public_key.pub
+if ! test -f ${EP_SSH_AUTHORIZED_KEYS}; then
+  touch ${EP_SSH_AUTHORIZED_KEYS}
+fi
+
 if test -f ${EP_SSH_AUTHORIZED_KEYS}; then
     PUBLIC_KEY_VALUE=$(cat remote_public_key.pub)
     if ! cat ${EP_SSH_AUTHORIZED_KEYS} | grep "${PUBLIC_KEY_VALUE}"; then
@@ -57,7 +62,7 @@ echo "echo ${PUBLIC_KEY} >> ~/.ssh/authorized_keys"
 # Start the SSH tunnel.
 ssh \
   -o StrictHostKeyChecking=no \
-  -f \
+  -f -4 \
   -N -R ${EP_TUNNEL_PORT}:localhost:22 \
   ${REMOTE_SSH_USER}@${REMOTE_SSH_HOST} \
   -p ${REMOTE_SSH_PORT} \

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Reverse Tunnel Disable - Remediate
+# Reverse Tunnel Disable - Evaluate
 # Check to see if the tunnel is already running, if it is exit 0, nothing more to do.
 set -eu
 
