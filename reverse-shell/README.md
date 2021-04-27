@@ -1,6 +1,6 @@
 # Reverse Shell v0.0.4
-This worklet creates a reverse SSH tunnel from an Automox device to a remote SSH server, allowing SSH 
-connections back to the device from the remote server, without exposing the SSH service on the
+This worklet creates a reverse SSH tunnel from an Automox device to a remote SSH server, allowing
+SSH  connections back to the device from the remote server, without exposing the SSH service on the
 device to the entire public.
 
 This Worklet has a sister Worklet, 
@@ -8,22 +8,40 @@ This Worklet has a sister Worklet,
 creates.
 
 ## What This Does
-This worklet will create a secure encrypted SSH tunnel between an Automox device, and an SSH server.
-Opening a tunnel this way will allow you to have an SSH session with a device without exposing SSH
-to the public internet. This script works without passwords, only SSH RSA keys. In the case that a
-device does not have any SSH keys suitable for use, it will create a pair, and send the public key
-in a way that you can retrieve through the Activity Log in the Automox console.
+### The Problem
+Reverse shells are incredibly useful for maintaining access to a machine which you don't want to
+publicly expose to the open internet, or can't due to firewalls or other networking constraints.
+However doing this creates it's own issues. Typically this requires the device to run the tunnel
+24/7, because you don't have the ability to initiate the tunnel at will without access to the
+device.
+
+### The Solution
+Automox Worklets can allow you to initiate this secure tunnel at will (as long as the device is
+online), as well as terminate that connection. This worklet will create a secure encrypted SSH
+tunnel between an Automox device and an SSH server, secured with SSH key pairs. If the device does
+not already have a suitable key pair it will create one. The Worklet will also report the device's
+public key to the Automox Activity log, so it can be added to your SSH server's authorized keys
+file.
 
 ## Before You Get Started
-This script, though functional, is currently a POC and not suggested for production use. Currently it only been throughly tested against Ubuntu 18.04 and Fedora 33. I am hoping to test this with more linux distros soon.
+This script, though functional, is currently a POC and not suggested for production use. Currently 
+it only been throughly tested against Ubuntu 18.04, Fedora 33 and macOS 11. I am hoping to test this
+with more operating systems soon.
 
-:warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be very dangerous and is not recommended. This script overly simplifies the nuances of running a public SSH server. I have put together a section about running an Open SSH server on a linux machine through a [Docker container](#docker-container-as-ssh-server) which helps alleviate _some_ security concerns, but is by no means perfect. I will continute to update this Worklet to address security concerns.
+:warning: **PLEASE BE AWARE:** Running SSH servers explicitly as described in this README can be
+very dangerous and is not recommended. This script overly simplifies the nuances of running a public
+SSH server. I have put together a section about running an Open SSH server on a linux machine
+through a [Docker container](#docker-container-as-ssh-server) which helps alleviate _some_ security
+concerns, but is by no means perfect. I will continue to update this Worklet to address security
+concerns.
 
-:warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to attach this worklet to only one device at a time for now.
+:warning: **ONE DEVICE AT A TIME:** Because this script is in it's infancy, it's recommended to
+attach this worklet to only one device at a time for now.
 
 ## What You Will Need
  - A device running the Automox agent (Ubuntu 18.04+/ Fedora 33+).
- - A server publicly available running SSH. :note: In order to forward traffic, your SSH server will have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
+ - A server publicly available running SSH. :note: In order to forward traffic, your SSH server will
+   have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
  - An SSH key pair, with a public key which can be retrieved via `curl`, to be added to the endpoints authorized keys.
 
 ## Worklet Variables
