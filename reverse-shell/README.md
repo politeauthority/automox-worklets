@@ -39,10 +39,17 @@ concerns.
 attach this worklet to only one device at a time for now.
 
 ## What You Will Need
- - A device running the Automox agent (Ubuntu 18.04+/ Fedora 33+).
+ - A device running the Automox agent running an operating system similar to Ubuntu 18.04+, Fedora 33+, macOS 11+.
  - A server publicly available running SSH. :note: In order to forward traffic, your SSH server will
    have to have the config value `AllowTcpForwarding yes` set in your `sshd_config`, typically found in `/etc/ssh/sshd_config`
  - An SSH key pair, with a public key which can be retrieved via `curl`, to be added to the endpoints authorized keys.
+
+## What it Does
+ - Checks to see if a tunnel is already running on the device.
+ - Checks for an SSH key pair on the device, if one does not exist one is created.
+ - Fetches the remote public key of the SSH server/ account the device will be connect to.
+ - Report the devices public key value to the Automox Activity Log.
+ - Initiate the SSH tunnel between the device and the SSH server on the port defined in `EP_TUNNEL_PORT`
 
 ## Worklet Variables
 You will need to have criteria for the following variables. These values will be used in the evaluation and remediation steps of the worklet, the will also be used on the remote SSH server to log back into the device over SSH.
@@ -159,7 +166,7 @@ From the SSH server run the following.
 ## Trouble Shooting
 If things are not going well, here are some debugging tips.
 
-Checkout the auth logs on your SSH server, for _most_ debian systems this will be located at `/var/log/auth.log`.
+Checkout the auth logs on your SSH server, for _most_ Debian systems this will be located at `/var/log/auth.log`.
 I often use the command `tail -f /var/log/auth.log | grep -i ssh`, so I can watch connections live while I debug.
 
 If you receive the error `ssh_exchange_identification: read: Connection reset by peer` when trying
@@ -169,7 +176,7 @@ is already in use, trying killing other tunnel connections, or changing this por
 
 ## Road Map
 There are a number of other features I would like to add to this worklet, and I welcome gladly feedback and any help! A couple of things on the radar currently are...
- - MacOs support is very close to being released!
+ - Testing on macOS version prior to Big Sur 11.
  - Wider testing on various Linux distros (Ubuntu 20+, Fedora)
  - Better setup instructions.
  - Potential for more control around generating/ supplying SSH keys.
